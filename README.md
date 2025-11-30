@@ -53,12 +53,12 @@ Download and install Fiddler Classic from the official website.
 
 ```bash
 # Create a new directory
-mkdir FiddlerDemoApi
-cd FiddlerDemoApi
+mkdir TrafficCaptureDemo
+cd TrafficCaptureDemo.Api
 
 # Create a new .NET 10 Minimal API project
-dotnet new web -n FiddlerDemoApi
-cd FiddlerDemoApi
+dotnet new web -n TrafficCaptureDemo.Api
+cd TrafficCaptureDemo.Api
 ```
 
 ### 2.2 Implement the API
@@ -78,7 +78,7 @@ var app = builder.Build();
 // Root endpoint - simple health check
 app.MapGet("/", () => Results.Ok(new 
 { 
-    Message = "Fiddler Demo API",
+    Message = "Traffic Capture Demo API",
     Timestamp = DateTime.UtcNow 
 }));
 
@@ -169,7 +169,7 @@ Your API should now be running at `https://localhost:5001`
 ### 3.1 Create a New Collection
 
 1. Open **Bruno**
-2. Create a new collection named "Fiddler Demo"
+2. Create a new collection named "Traffic Capture Demo"
 
 ### 3.2 Configure Proxy Settings
 

@@ -509,7 +509,7 @@ Below are the official product/documentation pages for tools and services refere
 - Fiddler Classic
   - Product: https://www.telerik.com/fiddler/fiddler-classic
   - Documentation: https://docs.telerik.com/fiddler
-  - Vendor legal / EULA: https://www.telerik.com/legal
+  - Vendor legal / EULA: verify license and terms on Fiddler's website before use
 
 - Bruno
   - Product / site: https://www.usebruno.com/

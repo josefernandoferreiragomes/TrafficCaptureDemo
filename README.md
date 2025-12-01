@@ -32,7 +32,7 @@ Download and install Fiddler Classic from the official website.
 3. Enable the following options:
    - ✅ **Capture HTTPS CONNECTs**
    - ✅ **Decrypt HTTPS traffic**
-   - Select **...from all processes** in the dropdown
+   - Select ```...from all processes``` in the dropdown
 
 ### 1.3 Trust Fiddler's Root Certificate
 
@@ -72,42 +72,49 @@ Replace the contents of `Program.cs` with the following code:
 
 ```csharp
 using System.Text.Json;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add HttpClient for making external API calls
+// Services
 builder.Services.AddHttpClient();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// Enable Swagger UI in Development
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 // Root endpoint - simple health check
-app.MapGet("/", () => Results.Ok(new 
-{ 
+app.MapGet("/", () => Results.Ok(new
+{
     Message = "Traffic Capture Demo API",
-    Timestamp = DateTime.UtcNow 
+    Timestamp = DateTime.UtcNow
 }));
 
 // Endpoint that calls an external API
 app.MapGet("/api/user/{id}", async (int id, IHttpClientFactory httpClientFactory) =>
 {
     var client = httpClientFactory.CreateClient();
-    
+
     try
     {
-        // Call JSONPlaceholder API (free public test API)
         var userResponse = await client.GetStringAsync(
             $"https://jsonplaceholder.typicode.com/users/{id}");
-        
+
         var user = JsonSerializer.Deserialize<JsonElement>(userResponse);
-        
-        // Call another endpoint to get user's posts
+
         var postsResponse = await client.GetStringAsync(
             $"https://jsonplaceholder.typicode.com/posts?userId={id}");
-        
+
         var posts = JsonSerializer.Deserialize<JsonElement>(postsResponse);
-        
+
         return Results.Ok(new
         {
             Message = "Data retrieved successfully",
@@ -126,7 +133,7 @@ app.MapGet("/api/user/{id}", async (int id, IHttpClientFactory httpClientFactory
 app.MapPost("/api/create-post", async (CreatePostRequest request, IHttpClientFactory httpClientFactory) =>
 {
     var client = httpClientFactory.CreateClient();
-    
+
     try
     {
         var postData = new
@@ -135,15 +142,15 @@ app.MapPost("/api/create-post", async (CreatePostRequest request, IHttpClientFac
             body = request.Body,
             userId = request.UserId
         };
-        
+
         var jsonContent = JsonContent.Create(postData);
-        
+
         var response = await client.PostAsync(
-            "https://jsonplaceholder.typicode.com/posts", 
+            "https://jsonplaceholder.typicode.com/posts",
             jsonContent);
-        
+
         var responseContent = await response.Content.ReadAsStringAsync();
-        
+
         return Results.Ok(new
         {
             Message = "Post created successfully",
@@ -157,17 +164,41 @@ app.MapPost("/api/create-post", async (CreatePostRequest request, IHttpClientFac
     }
 });
 
-// Configure Swagger in Development
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
+// Let Kestrel use configured URLs (from launchSettings.json / environment)
 app.Run();
 
 // Request model for POST endpoint
 record CreatePostRequest(string Title, string Body, int UserId);
+```
+
+Replace the contents of ```Properties/launchSettings.json``` with the following code:
+```json
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:5268",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "https": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:5001;http://localhost:5268",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
+
 ```
 
 ### 2.3 Run the API
@@ -190,6 +221,7 @@ Your API should now be running at `https://localhost:5001`
 1. Click on the **collection settings** (gear icon or three dots menu)
 2. Go to **Proxy** settings
 3. Configure as follows:
+   - **Config**: enabled
    - **Protocol**: HTTP
    - **Hostname**: `127.0.0.1`
    - **Port**: `8888`

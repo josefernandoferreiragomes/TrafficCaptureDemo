@@ -345,6 +345,59 @@ Test your API's error handling:
    - **Response**: `*404` or create custom response
 4. Make the request again - your API will receive the mocked response
 
+### 6.5 Copy as cURL
+
+Use FiddlerScript to Add Custom Export
+Create your own "Copy as cURL" function:
+
+1. In Fiddler: Rules → **Customize Rules...**
+2. Add this code inside the Handlers class, at the end of the class code:
+```javascript
+// Add context menu item
+public static ContextAction("Copy as cURL")
+function CopyCurl(oSessions: Session[]) {
+    if (oSessions.Length != 1) {
+        MessageBox.Show("Please select exactly one session");
+        return;
+    }
+    
+    var oS = oSessions[0];
+    var method = oS.RequestMethod;
+    var url = oS.fullUrl;
+    var curlCmd = "curl -X " + method + " '" + url + "'";
+    
+    // Add headers
+    for (var i:int = 0; i < oS.oRequest.headers.Count(); i++) {
+        var headerName = oS.oRequest.headers[i].Name;
+        var headerValue = oS.oRequest.headers[i].Value;
+        
+        // Skip certain headers
+        if (headerName != "Host" && 
+            headerName != "Content-Length" && 
+            headerName != "Connection") {
+            curlCmd += " -H '" + headerName + ": " + headerValue + "'";
+        }
+    }
+    
+    // Add body for POST/PUT/PATCH
+    if (oS.requestBodyBytes.Length > 0) {
+        var body = System.Text.Encoding.UTF8.GetString(oS.requestBodyBytes);
+        // Escape single quotes in body
+        body = body.Replace("'", "'\\''");
+        curlCmd += " -d '" + body + "'";
+    }
+    
+    // Add common flags
+    curlCmd += " --compressed --insecure";
+    
+    // Copy to clipboard
+    System.Windows.Forms.Clipboard.SetText(curlCmd);
+    FiddlerObject.StatusText = "cURL command copied to clipboard!";
+}
+```
+3. Save (Ctrl+S)
+4. Now when you right-click a session → You'll see "Copy as cURL"
+
 ## Step 7: Clean Up
 
 ### 7.1 When Finished Testing
@@ -437,34 +490,3 @@ You've successfully:
 - ✅ Verified all request/response payloads are visible despite encryption
 
 This setup is invaluable for debugging API integrations, understanding traffic flow, and troubleshooting issues in development environments.
-
-## Updates: Program.cs and launchSettings.json (F5 / Swagger fixes)
-
-This project was updated to avoid a port mismatch that could prevent the browser from opening when running the app with F5 in Visual Studio. The notes below explain what changed and how to verify the fix.
-
-### What changed
-
-- `Program.cs`
-  - Removed the hard-coded call `app.Run("https://localhost:5001")`.
-  - Now the app calls `app.Run()` so Kestrel uses the URLs provided by `launchSettings.json` or environment variables.
-  - Swagger UI is enabled in Development with `app.UseSwagger()` and `app.UseSwaggerUI()` so `launchUrl: "swagger"` opens the Swagger UI when the IDE launches the browser.
-
-- `Properties/launchSettings.json`
-  - Profiles contain `applicationUrl` entries used by Visual Studio when launching the app (example values in this repository):
-    - `http` profile: `http://localhost:5268`
-    - `https` profile: `https://localhost:7103;http://localhost:5268`
-  - Both profiles have `launchBrowser: true` and `launchUrl: "swagger"` so Visual Studio will open the Swagger UI when starting the app from the IDE.
-
-### How to verify in Visual Studio
-
-1. Select the desired launch profile from the debug dropdown (the profile names defined in `launchSettings.json`).
-2. Ensure the project is set as the startup project: right-click the project → **Set as Startup Project**.
-3. Start debugging with **Start Debugging** (F5).
-4. Open the **Output** window and check for the Kestrel binding lines (look for `Now listening on:`). The URLs listed there are the addresses the app is bound to and the browser should open to the `launchUrl` (for example, `/swagger`).
-
-### Troubleshooting if the browser still doesn't open
-
-- Confirm the active launch profile has `launchBrowser: true` and `launchUrl` set.
-- Make sure no other process is occupying the configured ports.
-- If the browser opens but shows 404 for `/swagger`, confirm `app.UseSwagger()` and `app.UseSwaggerUI()` are invoked when `app.Environment.IsDevelopment()` is true.
-- Verify your system's default browser is not blocking the automatic open.

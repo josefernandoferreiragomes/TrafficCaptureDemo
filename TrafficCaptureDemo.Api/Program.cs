@@ -1,21 +1,22 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add HttpClient for making external API calls
+// Services
 builder.Services.AddHttpClient();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Enable Swagger UI in Development
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
 
 // Root endpoint - simple health check
 app.MapGet("/", () => Results.Ok(new
@@ -31,13 +32,11 @@ app.MapGet("/api/user/{id}", async (int id, IHttpClientFactory httpClientFactory
 
     try
     {
-        // Call JSONPlaceholder API (free public test API)
         var userResponse = await client.GetStringAsync(
             $"https://jsonplaceholder.typicode.com/users/{id}");
 
         var user = JsonSerializer.Deserialize<JsonElement>(userResponse);
 
-        // Call another endpoint to get user's posts
         var postsResponse = await client.GetStringAsync(
             $"https://jsonplaceholder.typicode.com/posts?userId={id}");
 
@@ -92,7 +91,8 @@ app.MapPost("/api/create-post", async (CreatePostRequest request, IHttpClientFac
     }
 });
 
-app.Run("https://localhost:5001");
+// Let Kestrel use configured URLs (from launchSettings.json / environment)
+app.Run();
 
 // Request model for POST endpoint
 record CreatePostRequest(string Title, string Body, int UserId);

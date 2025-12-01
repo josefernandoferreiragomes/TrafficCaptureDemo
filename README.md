@@ -157,7 +157,14 @@ app.MapPost("/api/create-post", async (CreatePostRequest request, IHttpClientFac
     }
 });
 
-app.Run("https://localhost:5001");
+// Configure Swagger in Development
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.Run();
 
 // Request model for POST endpoint
 record CreatePostRequest(string Title, string Body, int UserId);
@@ -398,3 +405,34 @@ You've successfully:
 - ✅ Verified all request/response payloads are visible despite encryption
 
 This setup is invaluable for debugging API integrations, understanding traffic flow, and troubleshooting issues in development environments.
+
+## Updates: Program.cs and launchSettings.json (F5 / Swagger fixes)
+
+This project was updated to avoid a port mismatch that could prevent the browser from opening when running the app with F5 in Visual Studio. The notes below explain what changed and how to verify the fix.
+
+### What changed
+
+- `Program.cs`
+  - Removed the hard-coded call `app.Run("https://localhost:5001")`.
+  - Now the app calls `app.Run()` so Kestrel uses the URLs provided by `launchSettings.json` or environment variables.
+  - Swagger UI is enabled in Development with `app.UseSwagger()` and `app.UseSwaggerUI()` so `launchUrl: "swagger"` opens the Swagger UI when the IDE launches the browser.
+
+- `Properties/launchSettings.json`
+  - Profiles contain `applicationUrl` entries used by Visual Studio when launching the app (example values in this repository):
+    - `http` profile: `http://localhost:5268`
+    - `https` profile: `https://localhost:7103;http://localhost:5268`
+  - Both profiles have `launchBrowser: true` and `launchUrl: "swagger"` so Visual Studio will open the Swagger UI when starting the app from the IDE.
+
+### How to verify in Visual Studio
+
+1. Select the desired launch profile from the debug dropdown (the profile names defined in `launchSettings.json`).
+2. Ensure the project is set as the startup project: right-click the project → **Set as Startup Project**.
+3. Start debugging with **Start Debugging** (F5).
+4. Open the **Output** window and check for the Kestrel binding lines (look for `Now listening on:`). The URLs listed there are the addresses the app is bound to and the browser should open to the `launchUrl` (for example, `/swagger`).
+
+### Troubleshooting if the browser still doesn't open
+
+- Confirm the active launch profile has `launchBrowser: true` and `launchUrl` set.
+- Make sure no other process is occupying the configured ports.
+- If the browser opens but shows 404 for `/swagger`, confirm `app.UseSwagger()` and `app.UseSwaggerUI()` are invoked when `app.Environment.IsDevelopment()` is true.
+- Verify your system's default browser is not blocking the automatic open.

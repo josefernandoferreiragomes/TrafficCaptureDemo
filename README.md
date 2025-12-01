@@ -29,7 +29,7 @@ This tutorial demonstrates how to capture and inspect HTTPS traffic from a .NET 
 
 - .NET 10 SDK installed
 - Fiddler Classic (free) - [Download here](https://www.telerik.com/fiddler/fiddler-classic)
-- Bruno API Client (or any API client) - [Download here](https://www.usebruno.com/)
+- Bruno API Client (or any API client) - [Download here](https://www.usebruno.com/) (verify license and terms on the Bruno website before use)
 - Windows OS (for Fiddler Classic)
 
 ## Architecture
@@ -501,6 +501,26 @@ If you want to remove Fiddler's certificate:
 - [.NET HttpClient Documentation](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient)
 - [Bruno API Client Documentation](https://docs.usebruno.com/)
 - [JSONPlaceholder - Free API for Testing](https://jsonplaceholder.typicode.com/)
+
+## Official links & licenses
+
+Below are the official product/documentation pages for tools and services referenced in this tutorial. This list is provided for convenience — consult each project's website for exact license, trademark, and usage terms.
+
+- Fiddler Classic
+  - Product: https://www.telerik.com/fiddler/fiddler-classic
+  - Documentation: https://docs.telerik.com/fiddler
+  - Vendor legal / EULA: https://www.telerik.com/legal
+
+- Bruno
+  - Product / site: https://www.usebruno.com/
+  - Documentation: https://docs.usebruno.com/
+  - License / terms: verify license and terms on Bruno's website before use
+
+- JSONPlaceholder
+  - Site: https://jsonplaceholder.typicode.com/
+  - About / usage: https://jsonplaceholder.typicode.com/ (public testing API — verify terms before commercial use)
+
+If you plan to redistribute or bundle any third-party software or assets, obtain and follow the appropriate licensing and redistributation rules from the owners.
 
 ## Summary
 

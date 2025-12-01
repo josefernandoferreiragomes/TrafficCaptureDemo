@@ -63,6 +63,11 @@ cd TrafficCaptureDemo.Api
 
 ### 2.2 Implement the API
 
+Add Swashbuckle.AspNetCore package for Swagger support:
+```bash
+dotnet add package Swashbuckle.AspNetCore
+``` 
+
 Replace the contents of `Program.cs` with the following code:
 
 ```csharp
@@ -72,6 +77,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add HttpClient for making external API calls
 builder.Services.AddHttpClient();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 

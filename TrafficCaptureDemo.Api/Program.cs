@@ -4,8 +4,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add HttpClient for making external API calls
 builder.Services.AddHttpClient();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+}
+
+app.UseHttpsRedirection();
 
 // Root endpoint - simple health check
 app.MapGet("/", () => Results.Ok(new

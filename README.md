@@ -369,11 +369,14 @@ Test your API's error handling:
 
 ### 6.5 Copy as cURL
 
-Use FiddlerScript to Add Custom Export
-Create your own "Copy as cURL" function:
+Community-contributed Fiddler Classic script (optional)
 
-1. In Fiddler: Rules → **Customize Rules...**
-2. Add this code inside the Handlers class, at the end of the class code:
+The following FiddlerScript is a community-provided helper for **Fiddler Classic** that adds a "Copy as cURL" context action. This snippet is provided for convenience and is not affiliated with or endorsed by Progress Software. Do not redistribute Fiddler binaries or installers here.
+
+Notes:
+- This targets Fiddler Classic (FiddlerScript). Fiddler Everywhere may provide built-in export features or use a different extension model — consult official docs for vendor-supported functionality.
+- Verify any usage with the vendor's documentation and license terms before redistribution or commercial use.
+
 ```javascript
 // Add context menu item
 public static ContextAction("Copy as cURL")
@@ -417,8 +420,8 @@ function CopyCurl(oSessions: Session[]) {
     FiddlerObject.StatusText = "cURL command copied to clipboard!";
 }
 ```
-3. Save (Ctrl+S)
-4. Now when you right-click a session → You'll see "Copy as cURL"
+
+Save the script in Fiddler Classic via Rules → Customize Rules... and add it inside the `Handlers` class. Use at your own discretion and consult Progress/Telerik documentation for any vendor-specific guidance.
 
 ## Step 7: Clean Up
 

@@ -4,18 +4,22 @@
 
 This tutorial demonstrates the use of third-party tools and services:
 - **Fiddler Classic** is a trademark of Progress Software Corporation
-- **Bruno** is an open-source API client
+- **Bruno** is a third-party API client (use any API client)
 - This tutorial is not affiliated with or endorsed by these organizations
 - All trademarks belong to their respective owners
 
 ## License
 
-The **tutorial content and sample code** in this repository are licensed under 
+The **tutorial content and sample code** in this repository are licensed under
 the MIT License. See the [LICENSE](LICENSE) file for details.
 
-This license applies only to the original content in this repository, not to 
-the third-party tools referenced (Fiddler Classic, Bruno, etc.), which are 
-subject to their own respective licenses.
+This license applies only to the original content in this repository, not to
+the third-party tools referenced (Fiddler Classic, Bruno, JSONPlaceholder, etc.), which are
+subject to their own respective licenses. This repository does not distribute or modify those tools — it only links to them.
+
+Third-party tools referenced
+
+Third-party tools and services mentioned in this tutorial (for example, Fiddler Classic, Bruno, and JSONPlaceholder) are owned and maintained by their respective authors. Consult each project's website for license, trademark, and usage terms before using or redistributing those tools. This tutorial provides guidance for development and testing only.
 
 ## Overview
 
@@ -77,6 +81,7 @@ cd TrafficCaptureDemo.Api
 dotnet new web -n TrafficCaptureDemo.Api
 cd TrafficCaptureDemo.Api
 ```
+
 
 ### 2.2 Implement the API
 
